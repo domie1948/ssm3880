@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.GoodsInDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.goods_id as goodsId
+        ,a.gongyingshang_id as gongyingshangId
+        ,a.goods_in_number as goodsInNumber
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.GoodsInView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,gongyingshang.gongyingshang_name as gongyingshangName
+        ,gongyingshang.gongyingshang_xinyong_types as gongyingshangXinyongTypes
+        ,gongyingshang.gongyingshang_content as gongyingshangContent
+        ,gongyingshang.insert_time as insertTime
+        ,goods.goods_name as goodsName
+        ,goods.goods_types as goodsTypes
+        ,goods.goods_number as goodsNumber
+        ,goods.goods_yujing_number as goodsYujingNumber
+        ,goods.goods_photo as goodsPhoto
+        ,goods.danwei as danwei
+        ,goods.danjia as danjia
+        ,goods.goods_content as goodsContent
+        ,goods.flag as flag
+
+        FROM goods_in  a
+        left JOIN gongyingshang gongyingshang ON a.gongyingshang_id = gongyingshang.id
+        left JOIN goods goods ON a.goods_id = goods.id
+
+        <where>
+            <if test="params.goodsId != null">
+                and a.goods_id = #{params.goodsId}
+            </if>
+            <if test="params.gongyingshangId != null">
+                and a.gongyingshang_id = #{params.gongyingshangId}
+            </if>
+            <if test="params.goodsInNumberStart != null">
+                <![CDATA[  and a.goods_in_number >= #{params.goodsInNumberStart}   ]]>
+            </if>
+            <if test="params.goodsInNumberEnd != null">
+                <![CDATA[  and a.goods_in_number <= #{params.goodsInNumberEnd}   ]]>
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+            <if test=" params.gongyingshangName != '' and params.gongyingshangName != null and params.gongyingshangName != 'null' ">
+                and gongyingshang.gongyingshang_name like CONCAT('%',#{params.gongyingshangName},'%')
+            </if>
+            <if test="params.gongyingshangXinyongTypes != null">
+                and gongyingshang.gongyingshang_xinyong_types = #{params.gongyingshangXinyongTypes}
+            </if>
+
+            <if test=" params.gongyingshangContent != '' and params.gongyingshangContent != null and params.gongyingshangContent != 'null' ">
+                and gongyingshang.gongyingshang_content like CONCAT('%',#{params.gongyingshangContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(gongyingshang.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(gongyingshang.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test=" params.goodsName != '' and params.goodsName != null and params.goodsName != 'null' ">
+                and goods.goods_name like CONCAT('%',#{params.goodsName},'%')
+            </if>
+            <if test="params.goodsTypes != null">
+                and goods.goods_types = #{params.goodsTypes}
+            </if>
+
+            <if test="params.goodsNumberStart != null ">
+                <![CDATA[  and goods.goods_number >= #{params.goodsNumberStart}   ]]>
+            </if>
+            <if test="params.goodsNumberEnd != null ">
+                <![CDATA[  and goods.goods_number <= #{params.goodsNumberEnd}   ]]>
+            </if>
+            <if test="params.goodsYujingNumberStart != null ">
+                <![CDATA[  and goods.goods_yujing_number >= #{params.goodsYujingNumberStart}   ]]>
+            </if>
+            <if test="params.goodsYujingNumberEnd != null ">
+                <![CDATA[  and goods.goods_yujing_number <= #{params.goodsYujingNumberEnd}   ]]>
+            </if>
+            <if test=" params.danwei != '' and params.danwei != null and params.danwei != 'null' ">
+                and goods.danwei like CONCAT('%',#{params.danwei},'%')
+            </if>
+            <if test="params.danjiaStart != null ">
+                <![CDATA[  and goods.danjia >= #{params.danjiaStart}   ]]>
+            </if>
+            <if test="params.danjiaEnd != null ">
+                <![CDATA[  and goods.danjia <= #{params.danjiaEnd}   ]]>
+            </if>
+            <if test=" params.goodsContent != '' and params.goodsContent != null and params.goodsContent != 'null' ">
+                and goods.goods_content like CONCAT('%',#{params.goodsContent},'%')
+            </if>
+            <if test="params.flagStart != null ">
+                <![CDATA[  and goods.flag >= #{params.flagStart}   ]]>
+            </if>
+            <if test="params.flagEnd != null ">
+                <![CDATA[  and goods.flag <= #{params.flagEnd}   ]]>
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>
